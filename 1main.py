@@ -1,4 +1,6 @@
+from cryptography.fernet import Fernet
 import in_main
+import cryptography
 import os
 import sys
 import shutil
@@ -8,6 +10,15 @@ import pyzipper
 import zipfile
 import tkinter
 from tkinter import messagebox, Listbox, StringVar, filedialog
+from dotenv import load_dotenv, find_dotenv
+
+load_dotenv(find_dotenv())
+k = os.getenv('K')
+kk = os.getenv('KK')
+
+kfernet = Fernet(k)
+kkfernet = Fernet(kk)
+#encrypt = kfernet.encrypt()
 
 root1 = tkinter.Tk()
 root1['bg'] = 'gray6'
@@ -243,14 +254,14 @@ def main_window():
         name11.place(relx=0.001, rely=0.15)
 
         up_dir = tkinter.Listbox(move_win, font=100, fg='white', bg='gray11', highlightcolor="white",
-                                 selectbackground="dark violet")
+                                 selectbackground="dark violet", exportselection=0)
         up_dir.place(relx=0.001, rely=0.21, relwidth=0.8, relheight=0.2)
 
         name22 = tkinter.Label(move_win, text='Переместить в архив ниже', bg='gray8', font=100, fg='white')
         name22.place(relx=0.001, rely=0.48)
 
         down_dir = tkinter.Listbox(move_win, font=100, fg='white', bg='gray11', highlightcolor="white",
-                                   selectbackground="dark violet")
+                                   selectbackground="dark violet", exportselection=0)
         down_dir.place(relx=0.001, rely=0.54, relwidth=0.8, relheight=0.2)
 
         def deleted():
@@ -270,27 +281,34 @@ def main_window():
                 if os.path.isdir(os.path.join(os.getcwd(), directory)):
                     down_dir.insert(0, directory)
 
-        def moving():
-            con = list1.get(list1.curselection()[0])
+        con = list1.get(list1.curselection()[0])
 
-            selection1 =bool (up_dir.get(up_dir.curselection()[0]))
-            print(selection1)
-            if not up_dir.widget.curselection():
+        def start_updir(event):
+            if not event.widget.curselection():
                 return
-            selection2 = down_dir.get(down_dir.curselection()[0])
-            print(selection2)
+            else:
+                shutil.move(con, os.path.dirname(os.getcwd()))
+                path_change()
+                deleted()
 
-            path_change()
-            deleted()
-            pass
+        def start_downdir(event):
+            if not event.widget.curselection():
+                return
+            else:
+                shutil.move(con, os.path.join(os.getcwd(), down_dir.get(down_dir.curselection()[0])))
+                path_change()
+                deleted()
 
         checking()
 
-        ocn_btn = tkinter.Button(move_win, text="Потвердить", font=100, fg='dark violet', bg='gray11', command=moving)
-        ocn_btn.place(relx=0.005, rely=0.81)
+        #ocn_btn = tkinter.Button(move_win, text="Потвердить", font=100, fg='dark violet', bg='gray11', command=moving)
+        #ocn_btn.place(relx=0.005, rely=0.81)
 
         del_btn = tkinter.Button(move_win, text="Отменить", font=100, fg='dark violet', bg='gray11', command=deleted)
-        del_btn.place(relx=0.2, rely=0.81)
+        del_btn.place(relx=0.005, rely=0.81)
+
+        up_dir.bind("<<ListboxSelect>>", start_updir)
+        down_dir.bind("<<ListboxSelect>>", start_downdir)
 
         move_win.mainloop()
 
@@ -497,10 +515,12 @@ def main_window():
     path_change('')
     main.mainloop()
 
-loggingInSys = tkinter.Button (frame, text = 'Авторизация', command= main_window, fg = 'dark violet', bg = 'gray11', font = 90)
+loggingInSys = tkinter.Button (frame, text = 'Авторизация', command= main_window, fg = 'dark violet', bg = 'gray11',
+                               font = 90)
 loggingInSys.place (relx = 0.001, rely = 0.45)
 
-logging = tkinter.Button (frame, text = 'создайте учётную запись', command= in_main.registration_window, fg = 'dark violet', bg = 'gray11', font = 90)
+logging = tkinter.Button (frame, text = 'создайте учётную запись', command= in_main.registration_window,
+                          fg = 'dark violet', bg = 'gray11', font = 90)
 logging.place (relx = 0.001, rely = 0.62)
 
 root1.mainloop()

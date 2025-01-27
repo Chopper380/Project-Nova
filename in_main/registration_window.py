@@ -1,7 +1,11 @@
 import pyminizip
 import sqlite3
+import os
 import tkinter
 from tkinter import messagebox
+from dotenv import load_dotenv, find_dotenv
+import cryptography
+from cryptography.fernet import Fernet
 
 def registration_window():
 
@@ -41,7 +45,16 @@ def registration_window():
     repassword2 = tkinter.Entry(frame1, bg = 'gray11', foreground = 'white', font = 100, show= "*")
     repassword2.place(relx = 0.001, rely = 0.6, relwidth=0.7)
 
+    print(os.getcwd())
+
     def register():
+        load_dotenv(find_dotenv())
+        k = os.getenv('K')
+        kk = os.getenv('KK')
+
+        kfernet = Fernet(k)
+        #kkfernet = Fernet(kk)
+
         log = user_login21.get()
         pas = user_password21.get()
         repas = repassword2.get()
@@ -49,6 +62,17 @@ def registration_window():
         if repas != pas:
             messagebox.showinfo(title='Регистрация', message='Ой. Вы не правильно повторили пароль.')
             return
+
+
+        if os.path.exists('1not_user.db'):
+            with open('1not_user.db', 'rb') as f:
+                data = f.read()
+
+            decr = kfernet.decrypt(data)
+
+            with open('1not_user.db', 'wb') as f:
+                f.write(decr)
+
 
         db = sqlite3.connect('1not_user.db')
 
@@ -76,7 +100,32 @@ def registration_window():
         if result == log_list:
             messagebox.showinfo(title='Регистрация',
                                 message='Ой. Учётная запись с таким логином уже существует, попробуйте другой.')
+
             db.close()
+
+            sqlite3.connect('1not_user.db')
+
+            with open('1not_user.db', 'rb') as f:
+                data = f.read()
+
+            encr = kfernet.encrypt(data)
+
+            with open('1not_user.db', 'wb') as f:
+                f.write(encr)
+
+            db.close()
+
+
+
+        db.commit()
+
+        with open('1not_user.db', 'rb') as f:
+            data = f.read()
+
+        encr = kfernet.encrypt(data)
+
+        with open('1not_user.db', 'wb') as f:
+            f.write(encr)
 
         db.commit()
 
