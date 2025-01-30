@@ -50,10 +50,7 @@ def registration_window():
     def register():
         load_dotenv(find_dotenv())
         k = os.getenv('K')
-        kk = os.getenv('KK')
-
         kfernet = Fernet(k)
-        #kkfernet = Fernet(kk)
 
         log = user_login21.get()
         pas = user_password21.get()
@@ -112,6 +109,8 @@ def registration_window():
 
             with open('1not_user.db', 'wb') as f:
                 f.write(encr)
+
+            db.commit()
 
             db.close()
 

@@ -11,13 +11,6 @@ import zipfile
 import tkinter
 from tkinter import messagebox, Listbox, StringVar, filedialog
 from dotenv import load_dotenv, find_dotenv
-
-load_dotenv(find_dotenv())
-k = os.getenv('K')
-kk = os.getenv('KK')
-
-kfernet = Fernet(k)
-kkfernet = Fernet(kk)
 #encrypt = kfernet.encrypt()
 
 root1 = tkinter.Tk()
@@ -63,6 +56,20 @@ def main_window():
     log2 = "'" + log + "'"
     pas2 = "'" + pas + "'"
 
+    load_dotenv(find_dotenv())
+    k = os.getenv('K')
+    kk = os.getenv('KK')
+
+    kfernet = Fernet(k)
+    kkfernet = Fernet(kk)
+
+    with open('1not_user.db', 'rb') as f:
+        data = f.read()
+
+    decr = kfernet.decrypt(data)
+
+    with open('1not_user.db', 'wb') as f:
+        f.write(decr)
 
     db = sqlite3.connect('1not_user.db')
 
@@ -72,7 +79,24 @@ def main_window():
 
     if  not request:
         messagebox.showinfo(title='Авторизация',message='Ой. Неправильно введён Логин или Пароль.')
+        with open('1not_user.db', 'rb') as f:
+            data = f.read()
+
+        encr = kfernet.encrypt(data)
+
+        with open('1not_user.db', 'wb') as f:
+            f.write(encr)
         return
+
+    with open('1not_user.db', 'rb') as f:
+        data = f.read()
+
+    encr = kfernet.encrypt(data)
+
+    with open('1not_user.db', 'wb') as f:
+        f.write(encr)
+
+    db.commit()
 
     db.close()
 
@@ -300,9 +324,6 @@ def main_window():
                 deleted()
 
         checking()
-
-        #ocn_btn = tkinter.Button(move_win, text="Потвердить", font=100, fg='dark violet', bg='gray11', command=moving)
-        #ocn_btn.place(relx=0.005, rely=0.81)
 
         del_btn = tkinter.Button(move_win, text="Отменить", font=100, fg='dark violet', bg='gray11', command=deleted)
         del_btn.place(relx=0.005, rely=0.81)
