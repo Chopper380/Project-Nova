@@ -16,7 +16,7 @@ import tkinter
 from tkinter import Listbox
 
 
-def rename():
+def specl_win():
     spcl_win = tkinter.Tk()
     spcl_win['bg'] = 'gray6'
     spcl_win.wm_attributes('-alpha', 1)
@@ -125,4 +125,3 @@ def rename():
     spcl_win.mainloop()
 
 
-rename()
