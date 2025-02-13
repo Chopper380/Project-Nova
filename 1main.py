@@ -1,6 +1,7 @@
 from cryptography.fernet import Fernet
 import in_main
 import cryptography
+import re
 import os
 import sys
 import shutil
@@ -11,7 +12,7 @@ import zipfile
 import tkinter
 from tkinter import messagebox, Listbox, StringVar, filedialog
 from dotenv import load_dotenv, find_dotenv
-#encrypt = kfernet.encrypt()
+
 
 root1 = tkinter.Tk()
 root1['bg'] = 'gray6'
@@ -27,7 +28,7 @@ frame.place(relwidth = 1, relheight = 1)
 title2 = tkinter.Label(frame, text = 'Введите свой Логин и Пароль', bg = 'gray8', font = 100, fg = 'white')
 title2.place(relx = 0, rely = 0.1)
 
-fon = tkinter.Label(frame,bg = 'gray8', pady=100, padx=180)
+fon = tkinter.Label(frame,bg = 'gray8', pady=130, padx=180)
 fon.place(relx = 0, rely = 0.15)
 
 user_login1 = tkinter.Label(frame, text = 'Логин', bg = 'gray8', font = 100, fg = 'dark violet')
@@ -43,11 +44,10 @@ user_password2 = tkinter.Entry (frame, bg = 'gray11', foreground = 'white', font
 user_password2.place(relx = 0.001, rely = 0.4, relwidth = 0.45)
 
 if_pannel0 = tkinter.Label(frame, bg = 'gray8',pady=23, padx=130)
-if_pannel0.place(relx = 0, rely = 0.57)
+if_pannel0.place(relx = 0, rely = 0.67)
 
 if_pannel1 = tkinter.Label(frame, text = 'Если у вас отсутствует аккаунт, то', bg = 'gray8', font = 100, fg = 'white')
-if_pannel1.place(relx = 0, rely = 0.57)
-
+if_pannel1.place(relx = 0, rely = 0.67)
 
 
 def main_window():
@@ -77,8 +77,8 @@ def main_window():
 
     request = bool(cursor.execute(f'SELECT * FROM users WHERE col2 = {log2} AND col3 = {pas2}').fetchall())
 
-    if  not request:
-        messagebox.showinfo(title='Авторизация',message='Ой. Неправильно введён Логин или Пароль.')
+    if not request:
+        messagebox.showerror(title='Авторизация',message='Ой. Неправильно введён Логин и/или Пароль.')
         with open('1not_user.db', 'rb') as f:
             data = f.read()
 
@@ -86,7 +86,12 @@ def main_window():
 
         with open('1not_user.db', 'wb') as f:
             f.write(encr)
+
+        db.commit()
+        db.close()
         return
+
+
 
     with open('1not_user.db', 'rb') as f:
         data = f.read()
@@ -114,6 +119,14 @@ def main_window():
 
     zipl = log + ".zip"
     cur_wor_dir = os.getcwd()
+
+    with open(zipl, 'rb') as f:
+        data = f.read()
+
+    decr = kkfernet.decrypt(data)
+
+    with open(zipl, 'wb') as f:
+        f.write(decr)
 
     with pyzipper.AESZipFile(zipl) as zf:
         zf.extractall(path = pd, pwd = bytes(pas, 'utf-8'))
@@ -153,7 +166,7 @@ def main_window():
 
         for dir_name in os.listdir(last_wor_dir):
             if os.path.isdir(os.path.join(last_wor_dir, dir_name)):
-                shutil.move("./" + dir_name, temp_wor_dir)
+                shutil.move("./" + dir_name, temp_wor_dir + '/' + log)
 
         for file_name in os.listdir(last_wor_dir):
             if os.path.isfile(os.path.join(last_wor_dir, file_name)):
@@ -227,7 +240,7 @@ def main_window():
 
 
     def rename():
-        rename_window = tkinter.Tk()
+        rename_window = tkinter.Toplevel(main)
         rename_window['bg'] = 'gray6'
         rename_window.wm_attributes('-alpha', 1)
         rename_window.title("Переименование")
@@ -264,7 +277,7 @@ def main_window():
 
 
     def move_data():
-        move_win = tkinter.Tk()
+        move_win = tkinter.Toplevel(main)
         move_win['bg'] = 'gray6'
         move_win.wm_attributes('-alpha', 1)
         move_win.title("Перемещение")
@@ -344,7 +357,7 @@ def main_window():
 
 
     def arc_crt():
-        arc_win = tkinter.Tk()
+        arc_win = tkinter.Toplevel(main)
         arc_win['bg'] = 'gray6'
         arc_win.wm_attributes('-alpha', 1)
         arc_win.title("Создание архива")
@@ -392,7 +405,8 @@ def main_window():
 
 
     def special_window():
-        pass
+        in_main.specl_win()
+        path_change()
 
 
     def go_back():
@@ -432,7 +446,7 @@ def main_window():
     greting.place(relx=0.001, rely=0.08)
 
     greting1 = tkinter.Label(main, text='(также на ПКМ)', bg='gray8', font=100, fg='white')
-    greting1.place(relx=0.001, rely=0.11)
+    #greting1.place(relx=0.001, rely=0.11)
 
     separator1 = tkinter.Label(main, bg='gray8', text = "_______________", font=100, fg='white')
     separator1.place(relx=0.005, rely=0.14)
@@ -528,6 +542,14 @@ def main_window():
 
         shutil.rmtree(parent_dir3)
 
+        with open(zipl, 'rb') as f1:
+            data1 = f1.read()
+
+        encr1 = kkfernet.encrypt(data1)
+
+        with open(zipl, 'wb') as f1:
+            f1.write(encr1)
+
 
     main.bind('<Double-1>', change_path_by_click)
 
@@ -540,8 +562,11 @@ loggingInSys = tkinter.Button (frame, text = 'Авторизация', command= 
                                font = 90)
 loggingInSys.place (relx = 0.001, rely = 0.45)
 
+forg_pas = tkinter.Button (frame, text = 'Сменить пароль', command= in_main.new_password, fg = 'dark violet', bg = 'gray11', font = 90)
+forg_pas.place (relx = 0.001, rely = 0.55)
+
 logging = tkinter.Button (frame, text = 'создайте учётную запись', command= in_main.registration_window,
                           fg = 'dark violet', bg = 'gray11', font = 90)
-logging.place (relx = 0.001, rely = 0.62)
+logging.place (relx = 0.001, rely = 0.72)
 
 root1.mainloop()

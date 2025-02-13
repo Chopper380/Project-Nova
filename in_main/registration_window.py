@@ -6,6 +6,7 @@ from tkinter import messagebox
 from dotenv import load_dotenv, find_dotenv
 import cryptography
 from cryptography.fernet import Fernet
+import re
 
 def registration_window():
 
@@ -45,16 +46,31 @@ def registration_window():
     repassword2 = tkinter.Entry(frame1, bg = 'gray11', foreground = 'white', font = 100, show= "*")
     repassword2.place(relx = 0.001, rely = 0.6, relwidth=0.7)
 
-    print(os.getcwd())
 
     def register():
         load_dotenv(find_dotenv())
         k = os.getenv('K')
+        kk = os.getenv('KK')
+
         kfernet = Fernet(k)
+        kkfernet = Fernet(kk)
 
         log = user_login21.get()
         pas = user_password21.get()
         repas = repassword2.get()
+
+        if len(pas) < 8:
+            messagebox.showwarning(title='Регистрация', message='Пароль должен содержать от 8 символов.')
+            return
+        if not re.search("[a-z]", pas):
+            messagebox.showwarning("Регистрация", "Пароль должен содержать хотя бы 1 прописную латинскую букву.")
+            return
+        if not re.search("[A-Z]", pas):
+            messagebox.showwarning("Регистрация", "Пароль должен содержать хотя бы 1 строчную латинскую букву.")
+            return
+        if not re.search("[0-9]", pas):
+            messagebox.showwarning("Регистрация", "Пароль должен содержать хотя бы 1 цифру.")
+            return
 
         if repas != pas:
             messagebox.showinfo(title='Регистрация', message='Ой. Вы не правильно повторили пароль.')
@@ -95,7 +111,7 @@ def registration_window():
         result = [b]
 
         if result == log_list:
-            messagebox.showinfo(title='Регистрация',
+            messagebox.showwarning(title='Регистрация',
                                 message='Ой. Учётная запись с таким логином уже существует, попробуйте другой.')
 
             db.close()
@@ -131,6 +147,14 @@ def registration_window():
         db.close()
 
         pyminizip.compress('1test.TXT', None, log + '.zip', pas, 5)
+
+        with open(log + '.zip', 'rb') as f:
+            data = f.read()
+
+        encr = kkfernet.encrypt(data)
+
+        with open(log + '.zip', 'wb') as f:
+            f.write(encr)
 
         messagebox.showinfo(title='Регистрация', message='Учётная запись успешно добавленна.')
 

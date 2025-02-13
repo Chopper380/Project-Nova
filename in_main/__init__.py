@@ -1,2 +1,3 @@
 from .registration_window import *
-#from .functions import *
+from .special import *
+from .forgot import *
