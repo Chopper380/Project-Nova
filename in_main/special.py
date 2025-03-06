@@ -108,25 +108,25 @@ def specl_win():
         text.insert('1.0', opis1)
 
 
+
         def path_finder():
-            path = os.getcwd()
             a = 0
+            path = os.getcwd()
             while a == 0:
-                path = os.path.abspath(path)
+                path = os.path.abspath(os.path.join(path, os.pardir))
                 if os.path.exists(os.path.join(path, os.path.join("./Addition", "\xa0"))):
-                    path = os.path.join(path, os.path.join("./Addition", "\xa0"))
+                    path = os.path.join(path, "./Addition")
                     a += 1
                     return path
                 else:
                     continue
 
-        #path_path = path_finder()
-        #print(path_path)
+
 
         def ok():
+            path = path_finder()
             cho_nor_dir = filedialog.askdirectory(title="Выберете Папку, в которую вы хотите добавить Скрытую папку")
-            shutil.copytree(os.path.join("./Addition", "\xa0"),
-                            cho_nor_dir, dirs_exist_ok=True)
+            shutil.copytree(path, cho_nor_dir, dirs_exist_ok=True)
 
             messagebox.showinfo(title="Скрытая папка", message='Скрытая папка была успешно добавлена. Для '
                                                                'дополнитнльного скрытия этой папки вы можете октлючить в'

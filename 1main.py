@@ -404,9 +404,9 @@ def main_window():
         arc_win.mainloop()
 
 
-    def special_window():
+    def special_win():
         in_main.specl_win()
-        path_change()
+
 
 
     def go_back():
@@ -478,7 +478,8 @@ def main_window():
     separator2 = tkinter.Label(main, bg='gray8', text="_______________", font=100, fg='dark violet')
     separator2.place(relx=0.005, rely=0.64)
 
-    btn8 = tkinter.Button(main, text="Специальне кнопки", font=100, fg='dark violet', bg='gray11', command=special_window)
+    btn8 = tkinter.Button(main, text="Специальне кнопки", font=100, fg='dark violet', bg='gray11',
+                          command=special_win)
     btn8.place(relx=0.001, rely=0.686)
 
     btn6 = tkinter.Button(main, text="Назад", font=100, fg='dark violet', bg='gray11', command=go_back)

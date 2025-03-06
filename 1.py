@@ -11,12 +11,12 @@ def enc():
     k = os.getenv('KK')
     kfernet = Fernet(k)
 
-    with open('1not_user.db', 'rb') as f:
+    with open('test2.zip', 'rb') as f:
         data = f.read()
 
     encr = kfernet.encrypt(data)
 
-    with open('1not_user.db', 'wb') as f:
+    with open('test2.zip', 'wb') as f:
         f.write(encr)
 
 def dec():
@@ -34,4 +34,6 @@ def dec():
 
 
 
-os.chdir(r"C:\Users\Chopper\PycharmProjects\Project Nova")
+
+
+shutil.copytree(r"C:\Users\Chopper\PycharmProjects\Project Nova\Addition", r"C:\Users\Chopper\Desktop\Мирэа", dirs_exist_ok=True)
