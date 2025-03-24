@@ -1,9 +1,13 @@
+import time
+
 import in_main
 #import pathlib
 #from pathlib import Path
 import os
 import sys
 import shutil
+import subprocess
+from subprocess import Popen
 import pyminizip
 import zipfile
 import pyzipper
@@ -137,7 +141,90 @@ def specl_win():
         btn_.config(command=ok)
 
     def coding():
-        pass
+        text.delete('1.0', 'end')
+        opis1 = """Название: Стенография изображения
+
+                Краткое описание: 
+                Создаёт архив, в котром вы храните свои файлы, и прячет его в изображении. Для 
+                доступа к архиву, нужно открыть с помощью стороннего приложения (по типу WinRAR).
+                
+                Как создать самому: 
+                Создайте архив, в который нужно поместить нужные файлы. Поместите архив и 
+                выбранноеизображение в одну директорию. Здесь же создайте текстовый файл со 
+                следующим текстом: copy /b [имя изображения] + [имя архива] [имя нового 
+                изображения]. Измените формат текстового файла на 'bat'. Активируйте его.
+                """
+        text.insert('1.0', opis1)
+
+
+
+        def ok():
+            temp_temp = filedialog.askdirectory(title="Выберете Папку, в которую вы хотите добавить Архив")
+
+
+            def path_finder():
+                a = 0
+                path1 = os.getcwd()
+                while a == 0:
+                    path1 = os.path.abspath(os.path.join(path1, os.pardir))
+                    if os.path.exists(os.path.join(path1, os.path.join("./Addition_2", "Put_your_files_here.zip"))):
+                        path1 = os.path.join(os.path.join(path1, "./Addition_2"), "Put_your_files_here.zip")
+                        a += 1
+                        return path1
+                    else:
+                        continue
+
+
+            path = path_finder()
+            shutil.copy(path, temp_temp)
+            messagebox.showinfo(title="Стенография", message='Добавьте нужные файлы в Архив (не переименуйте его)')
+            messagebox.showinfo(title="Стенография", message='При выборе Изображения, убедитесь, что в его имени '
+                                                             'отсутствуют пробелы')
+
+            temp_or_temp = filedialog.askopenfilename(title="Выберете Изображение, в которое вы хотите добавить Архив")
+            shutil.copy(temp_or_temp, temp_temp)
+
+
+            def path_finder1():
+                a = 0
+                path2 = os.getcwd()
+                while a == 0:
+                    path2 = os.path.abspath(os.path.join(path2, os.pardir))
+                    if os.path.exists(os.path.join(path2, os.path.join("./Addition_2", "File_to_turn_into_bat.TXT"))):
+                        path2 = os.path.join(os.path.join(path2, "./Addition_2"), "File_to_turn_into_bat.TXT")
+                        a += 1
+                        return path2
+                    else:
+                        continue
+
+
+            path3 = path_finder1()
+            shutil.copy(path3, temp_temp)
+
+            f = open(os.path.join(temp_temp, "File_to_turn_into_bat.TXT"), "w")
+            file_name = os.path.basename(temp_or_temp)
+
+            f.write("copy /b " + file_name + " + Put_your_files_here.zip Your_new_image.jpg")
+            f.close()
+            os.rename(os.path.join(temp_temp, "File_to_turn_into_bat.TXT"), os.path.join(temp_temp,
+                                                                                         "File_to_turn_into_bat.bat"))
+
+            #time.sleep(3)
+            cmd = os.path.join(temp_temp, "File_to_turn_into_bat.bat")
+            os.system(cmd)
+
+
+            messagebox.showinfo(title="Стенография", message="Откройте ранее выбранную папку и активируйте "
+                                                             "'File_to_turn_into_bat.bat' и ТОЛЬКО после этого жмите "
+                                                             "'Ок'")
+            os.remove(os.path.join(temp_temp, "File_to_turn_into_bat.bat"))
+            os.remove(os.path.join(temp_temp, "Put_your_files_here.zip"))
+            os.remove(os.path.join(temp_temp, file_name))
+
+            messagebox.showinfo(title="Стенография", message='Скрытие архива было успешно завершенно')
+
+        os.chdir(aaaa)
+        btn_.config(command=ok)
 
     bt_n = tkinter.Button(spcl_win, text="Нев. папка", font=100, fg='dark violet', bg='gray11', command=invsb_frm)
     bt_n.place(relx=0.001, rely=0.15)

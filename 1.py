@@ -33,7 +33,6 @@ def dec():
         f.write(decr)
 
 
-
-
-
-shutil.copytree(r"C:\Users\Chopper\PycharmProjects\Project Nova\Addition", r"C:\Users\Chopper\Desktop\Мирэа", dirs_exist_ok=True)
+temp_or_temp = filedialog.askopenfilename(title="Выберете Изображение, в которое вы хотите добавить Архив")
+a = os.path.basename(temp_or_temp)
+print(a)
